@@ -50,7 +50,7 @@ st.markdown(
     }
     
     /* Card principal con efecto neumórfico */
-    .main-card {
+    .st-key-main-card {
         background: rgba(255, 255, 255, 0.98);
         backdrop-filter: blur(20px);
         border-radius: 30px;
@@ -250,114 +250,51 @@ st.markdown(
 )
 
 # 🐳 Contenido principal
-st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+with st.container(key="main-card"):
+    # Emoji animado
+    st.markdown("<div class='whale-emoji'>🐳</div>", unsafe_allow_html=True)
 
-# Emoji animado
-st.markdown("<div class='whale-emoji'>🐳</div>", unsafe_allow_html=True)
+    # Título y subtítulo
+    st.title("Hello Docker")
+    st.markdown("<p class='subtitle'>Tu primera aplicación containerizada</p>", unsafe_allow_html=True)
 
-# Título y subtítulo
-st.title("Hello Docker")
-st.markdown("<p class='subtitle'>Tu primera aplicación containerizada</p>", unsafe_allow_html=True)
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
-st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+    # Input y botón
+    name = st.text_input("", placeholder="✨ Escribe tu nombre aquí...", label_visibility="collapsed")
 
-# Input y botón
-name = st.text_input("", placeholder="✨ Escribe tu nombre aquí...", label_visibility="collapsed")
+    if st.button("🚀 ¡Saludar!"):
+        if name:
+            greetings = [
+                f"🎉 ¡Hola {name}! Bienvenido/a al mundo Docker",
+                f"👋 ¡Qué tal {name}! Estás dentro de un contenedor",
+                f"🌟 ¡Hola {name}! Docker es genial, ¿verdad?",
+                f"🚀 ¡Hey {name}! Tu app está corriendo en Docker"
+            ]
+            st.success(random.choice(greetings))
+            st.balloons()
 
-if st.button("🚀 ¡Saludar!"):
-    if name:
-        greetings = [
-            f"🎉 ¡Hola {name}! Bienvenido/a al mundo Docker",
-            f"👋 ¡Qué tal {name}! Estás dentro de un contenedor",
-            f"🌟 ¡Hola {name}! Docker es genial, ¿verdad?",
-            f"🚀 ¡Hey {name}! Tu app está corriendo en Docker"
-        ]
-        st.success(random.choice(greetings))
-        st.balloons()
-        
-                # 💾 Guardar el nombre en el archivo
-        with open(DATA_FILE, "a", encoding="utf-8") as f:
-            f.write(name + "\n")
+            # 💾 Guardar el nombre en el archivo
+            with open(DATA_FILE, "a", encoding="utf-8") as f:
+                f.write(name + "\n")
 
+        else:
+            st.warning("⚠️ No olvides escribir tu nombre")
+
+    # 📋 Mostrar nombres guardados en tabla
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            names = f.read().splitlines()
+
+        if names:
+            df = pd.DataFrame(
+                {
+                    "👤 Nombre": names
+                }
+            )
+
+            st.table(df)
+        else:
+            st.info("Aún no hay nombres guardados.")
     else:
-        st.warning("⚠️ No olvides escribir tu nombre")
-
-# 📋 Mostrar nombres guardados en tabla
-
-if os.path.exists(DATA_FILE):
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        names = f.read().splitlines()
-
-    if names:
-        df = pd.DataFrame(
-            {
-                "👤 Nombre": names
-            }
-        )
-
-        st.table(df)
-    else:
-        st.info("Aún no hay nombres guardados.")
-else:
-    st.info("Aún no hay datos guardados.")
-
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Stats visuales
-st.markdown(
-    """
-    <div class='stats'>
-        <div class='stat-item'>
-            <div class='stat-number'>100%</div>
-            <div class='stat-label'>Portable</div>
-        </div>
-        <div class='stat-item'>
-            <div class='stat-number'>∞</div>
-            <div class='stat-label'>Escalable</div>
-        </div>
-        <div class='stat-item'>
-            <div class='stat-number'>⚡</div>
-            <div class='stat-label'>Rápido</div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-# Cards informativos
-st.markdown(
-    """
-    <div class='info-card'>
-        <h3>🐍 Python + Streamlit</h3>
-        <p>Aplicación web moderna y reactiva</p>
-    </div>
-    
-    <div class='info-card'>
-        <h3>🐳 Docker Container</h3>
-        <p>Empaquetado y listo para ejecutar en cualquier lugar</p>
-    </div>
-    
-    <div class='info-card'>
-        <h3>☁️ Docker Hub</h3>
-        <p>Comparte tu aplicación con el mundo</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-# Footer
-st.markdown(
-    """
-    <div class='footer'>
-        <p class='footer-text'>🐳 Aplicación ejecutándose en contenedor Docker</p>
-        <div>
-            <span class='tech-badge'>🐍 Python</span>
-            <span class='tech-badge'>🎈 Streamlit</span>
-            <span class='tech-badge'>🐳 Docker</span>
-        </div>
-        <p style='margin-top: 1rem; color: #9ca3af; font-size: 0.9rem;'>Hecho con ❤️ para aprender Docker</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        st.info("Aún no hay datos guardados.")

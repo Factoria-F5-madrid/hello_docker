@@ -75,19 +75,19 @@ Antes de dockerizar, vamos a probar que todo funciona correctamente.
 
 ### 1️⃣ Crear entorno virtual
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 ### 2️⃣ Activar el entorno virtual
 
 **Windows:**
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 **Mac / Linux:**
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 ### 3️⃣ Instalar dependencias
