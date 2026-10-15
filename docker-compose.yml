@@ -1,0 +1,23 @@
+# Dos servicios: la app Streamlit y una base de datos PostgreSQL
+services:
+  app:
+    build: .                          # construye la imagen con el Dockerfile
+    ports:
+      - "8501:8501"                   # puerto-de-tu-ordenador:puerto-del-contenedor
+    volumes:
+      - datos_app:/app/data           # los nombres se conservan entre reinicios
+    depends_on:
+      - db                            # arranca la base de datos antes que la app
+
+  db:
+    image: postgres:16-alpine         # imagen oficial de PostgreSQL
+    environment:
+      POSTGRES_USER: hello
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hello_pass}   # usa DB_PASSWORD si existe en .env
+      POSTGRES_DB: hello
+    volumes:
+      - datos_db:/var/lib/postgresql/data
+
+volumes:
+  datos_app:
+  datos_db:

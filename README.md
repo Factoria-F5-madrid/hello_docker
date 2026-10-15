@@ -65,6 +65,7 @@ hello_docker/
 ├── app.py              # Aplicación Streamlit
 ├── requirements.txt    # Dependencias Python
 ├── Dockerfile          # Instrucciones para Docker
+├── docker-compose.yml  # Levanta app + base de datos
 └── README.md          # Este archivo
 ```
 ---
@@ -355,6 +356,64 @@ docker run -p 8501:8501 -v datos_app:/app/data gema/hello_docker:v1.0
 Docker descargará automáticamente la imagen desde Docker Hub y la ejecutará.
 
 > 💡 **Tip:** Si haces cambios en tu app y quieres subir una nueva versión, cambia el número de versión (ej: `v2.0`) y repite los pasos de etiquetado y push.
+
+---
+
+## 🧩 PARTE 5: Varios servicios con Docker Compose
+
+Hasta ahora ejecutabas un solo contenedor con comandos largos. Con **Docker Compose** describes en un archivo todos los servicios y los levantas con un solo comando.
+
+Este proyecto levanta **dos servicios**:
+
+| Servicio | Qué es | Puerto |
+|----------|--------|--------|
+| `app` | Tu aplicación Streamlit (se construye con el `Dockerfile`) | `8501` |
+| `db` | Base de datos PostgreSQL (imagen oficial) | interno |
+
+### 📝 Paso 1: Revisar `docker-compose.yml`
+
+El archivo está en la raíz del proyecto. Cada bloque `services` es un contenedor:
+
+- `build: .` → la app se construye con tu Dockerfile
+- `ports` → mapea el puerto 8501 a tu máquina
+- `volumes` → guarda los datos fuera del contenedor (igual que en la PARTE 2.5)
+- `depends_on` → arranca `db` antes que `app`
+- `image: postgres:16-alpine` → usa una imagen ya hecha, sin Dockerfile propio
+
+> 💡 **Opcional:** crea un archivo `.env` junto a `docker-compose.yml` con `DB_PASSWORD=tu_clave`. Si no existe, se usa `hello_pass`. El `.env` ya está en `.gitignore`, así que no se sube a GitHub.
+
+### ▶️ Paso 2: Levantar los dos servicios
+
+```bash
+docker compose up --build
+```
+
+- `up` → crea y arranca los servicios
+- `--build` → reconstruye la imagen de `app` si has cambiado el código
+
+Abre `http://localhost:8501` para ver la app. Para parar todo pulsa `Ctrl+C`.
+
+### 🔍 Paso 3: Comprobar que están corriendo
+
+```bash
+# Ver los servicios del proyecto
+docker compose ps
+
+# Ver los logs de un servicio
+docker compose logs db
+```
+
+### 🧹 Paso 4: Parar y limpiar
+
+```bash
+# Para los contenedores y los borra (los volúmenes se conservan)
+docker compose down
+
+# Para, borra y además elimina los volúmenes (CUIDADO: borra los datos)
+docker compose down -v
+```
+
+> 💡 **Importante:** `docker compose down` no borra los volúmenes, así que los nombres guardados siguen ahí al volver a levantarlo.
 
 ---
 
