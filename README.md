@@ -15,6 +15,33 @@ El `Dockerfile` no cambia. El `docker-compose.yml` no viene en la rama: lo creas
 
 ---
 
+## Dockerfile o Docker Compose: cuál usar
+
+Piensa en un restaurante. El **Dockerfile** es la receta de un plato: explica cómo preparar una sola cosa. **Docker Compose** es la comanda completa: dice qué platos salen juntos y cómo se conectan entre sí.
+
+| | Dockerfile | Docker Compose |
+|---|---|---|
+| Qué es | Receta para construir **una imagen** | Archivo que describe **varios contenedores** y cómo trabajan juntos |
+| Qué crea | Una imagen (la plantilla de tu app) | Los contenedores, la red entre ellos y los volúmenes |
+| Cómo se usa | `docker build` y `docker run` | `docker compose up` |
+| Qué contiene | Qué instalar y cómo arrancar tu app | Servicios, puertos, variables, volúmenes y orden de arranque |
+| Archivo | `Dockerfile` | `docker-compose.yml` |
+
+### Cuándo usamos cada uno
+
+- **Solo Dockerfile:** tu app funciona sola, sin depender de nada más. Es lo que hicimos en las Partes 1 a 4: una app que guarda en un archivo.
+- **Docker Compose:** tu app necesita otros servicios, como una base de datos. Con `docker run` tendrías que lanzar cada contenedor a mano, crear la red y acordarte de todas las opciones. Compose lo deja todo escrito en un archivo y se levanta con un solo comando.
+
+### Se usan juntos
+
+No son rivales. El Dockerfile sigue construyendo la imagen de la app, y el Compose la usa con `build: .`. Para la base de datos no hace falta Dockerfile porque usamos una imagen ya hecha (`postgres:16-alpine`).
+
+```
+Dockerfile  ->  construye la imagen de la app  ->  Compose la arranca junto a la base de datos
+```
+
+---
+
 ## Paso 0: Clonar esta rama
 
 ```bash
