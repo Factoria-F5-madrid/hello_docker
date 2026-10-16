@@ -376,9 +376,20 @@ El archivo está en la raíz del proyecto. Cada bloque `services` es un contened
 
 - `build: .` → la app se construye con tu Dockerfile
 - `ports` → mapea el puerto 8501 a tu máquina
-- `volumes` → guarda los datos fuera del contenedor (igual que en la PARTE 2.5)
-- `depends_on` → arranca `db` antes que `app`
+- `environment` (en `app`) → datos de conexión que lee `app.py`. `DB_HOST: db` usa el nombre del servicio como dirección
+- `depends_on` con `service_healthy` → la app arranca solo cuando PostgreSQL ya acepta conexiones
 - `image: postgres:16-alpine` → usa una imagen ya hecha, sin Dockerfile propio
+- `volumes` (en `db`) → los nombres se guardan en la base de datos, fuera del contenedor (igual que en la PARTE 2.5)
+
+### 🐘 Qué cambia en `app.py`
+
+Antes los nombres se guardaban en `data/nombres.txt`. Ahora van a una tabla `nombres` de PostgreSQL. Los cambios están marcados con `# 🐘 CAMBIO` en el código:
+
+- `import psycopg2` → el driver que conecta Python con PostgreSQL (añadido en `requirements.txt`)
+- `DB_CONFIG` → lee la conexión de las variables de entorno
+- `CREATE TABLE IF NOT EXISTS` → crea la tabla la primera vez
+- `INSERT` → sustituye al `f.write` del archivo
+- `SELECT` → sustituye a la lectura del archivo
 
 > 💡 **Opcional:** crea un archivo `.env` junto a `docker-compose.yml` con `DB_PASSWORD=tu_clave`. Si no existe, se usa `hello_pass`. El `.env` ya está en `.gitignore`, así que no se sube a GitHub.
 
@@ -413,7 +424,7 @@ docker compose down
 docker compose down -v
 ```
 
-> 💡 **Importante:** `docker compose down` no borra los volúmenes, así que los nombres guardados siguen ahí al volver a levantarlo.
+> 💡 **Importante:** `docker compose down` no borra el volumen `datos_db`, así que los nombres guardados siguen ahí al volver a levantarlo. Con `down -v` sí se borran.
 
 ---
 

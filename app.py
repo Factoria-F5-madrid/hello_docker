@@ -2,14 +2,21 @@ import streamlit as st
 import random
 import os
 import pandas as pd
+import psycopg2  # 🐘 CAMBIO: driver para conectar con PostgreSQL (antes solo se usaba un archivo)
 
 
-# 📁 Carpeta y archivo donde se guardarán los nombres
-DATA_DIR = "data"
-DATA_FILE = os.path.join(DATA_DIR, "nombres.txt")
+# 🐘 CAMBIO: los nombres se guardan en PostgreSQL en vez de data/nombres.txt.
+# Los datos de conexión llegan como variables de entorno (las define docker-compose.yml)
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST", "localhost"),
+    "dbname": os.getenv("DB_NAME", "hello"),
+    "user": os.getenv("DB_USER", "hello"),
+    "password": os.getenv("DB_PASSWORD", "hello_pass"),
+}
 
-# Crear la carpeta si no existe
-os.makedirs(DATA_DIR, exist_ok=True)
+# 🐘 CAMBIO: crear la tabla si no existe (se ejecuta cada vez que Streamlit recarga la página)
+with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
+    cur.execute("CREATE TABLE IF NOT EXISTS nombres (id SERIAL PRIMARY KEY, nombre TEXT NOT NULL)")
 
 
 # 🎨 Configuración de la página
@@ -274,27 +281,26 @@ with st.container(key="main-card"):
             st.success(random.choice(greetings))
             st.balloons()
 
-            # 💾 Guardar el nombre en el archivo
-            with open(DATA_FILE, "a", encoding="utf-8") as f:
-                f.write(name + "\n")
+            # 💾 CAMBIO: guardar el nombre en PostgreSQL (antes: f.write en nombres.txt)
+            with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
+                cur.execute("INSERT INTO nombres (nombre) VALUES (%s)", (name,))
 
         else:
             st.warning("⚠️ No olvides escribir tu nombre")
 
     # 📋 Mostrar nombres guardados en tabla
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            names = f.read().splitlines()
+    # 🐘 CAMBIO: leer los nombres de PostgreSQL (antes: leer nombres.txt)
+    with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
+        cur.execute("SELECT nombre FROM nombres ORDER BY id")
+        names = [row[0] for row in cur.fetchall()]
 
-        if names:
-            df = pd.DataFrame(
-                {
-                    "👤 Nombre": names
-                }
-            )
+    if names:
+        df = pd.DataFrame(
+            {
+                "👤 Nombre": names
+            }
+        )
 
-            st.table(df)
-        else:
-            st.info("Aún no hay nombres guardados.")
+        st.table(df)
     else:
-        st.info("Aún no hay datos guardados.")
+        st.info("Aún no hay nombres guardados.")
