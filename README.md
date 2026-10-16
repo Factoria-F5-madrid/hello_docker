@@ -19,6 +19,15 @@ Aquí la evolucionamos en dos pasos:
 
 En esta rama encontrarás el `Dockerfile` y el código ya cambiado. El `docker-compose.yml` lo creas tú en la Parte 5.
 
+### Cómo clonar esta rama
+
+```bash
+git clone -b docker_compose https://github.com/Factoria-F5-madrid/hello_docker.git
+cd hello_docker
+```
+
+Si ya tienes la carpeta de la Parte 1, no clones encima: clona en otra carpeta o usa `git fetch` y `git switch docker_compose` dentro de la tuya.
+
 ---
 
 ## Objetivo del ejercicio
