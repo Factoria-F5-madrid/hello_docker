@@ -2,10 +2,10 @@ import streamlit as st
 import random
 import os
 import pandas as pd
-import psycopg2  # 🐘 CAMBIO: driver para conectar con PostgreSQL (antes solo se usaba un archivo)
+import psycopg2  # CAMBIO: driver para conectar con PostgreSQL (antes solo se usaba un archivo)
 
 
-# 🐘 CAMBIO: los nombres se guardan en PostgreSQL en vez de data/nombres.txt.
+# CAMBIO: los nombres se guardan en PostgreSQL en vez de data/nombres.txt.
 # Los datos de conexión llegan como variables de entorno (las define docker-compose.yml)
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -14,7 +14,7 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD", "hello_pass"),
 }
 
-# 🐘 CAMBIO: crear la tabla si no existe (se ejecuta cada vez que Streamlit recarga la página)
+# CAMBIO: crear la tabla si no existe (se ejecuta cada vez que Streamlit recarga la página)
 with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
     cur.execute("CREATE TABLE IF NOT EXISTS nombres (id SERIAL PRIMARY KEY, nombre TEXT NOT NULL)")
 
@@ -281,7 +281,7 @@ with st.container(key="main-card"):
             st.success(random.choice(greetings))
             st.balloons()
 
-            # 💾 CAMBIO: guardar el nombre en PostgreSQL (antes: f.write en nombres.txt)
+            # CAMBIO: guardar el nombre en PostgreSQL (antes: f.write en nombres.txt)
             with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
                 cur.execute("INSERT INTO nombres (nombre) VALUES (%s)", (name,))
 
@@ -289,7 +289,7 @@ with st.container(key="main-card"):
             st.warning("⚠️ No olvides escribir tu nombre")
 
     # 📋 Mostrar nombres guardados en tabla
-    # 🐘 CAMBIO: leer los nombres de PostgreSQL (antes: leer nombres.txt)
+    # CAMBIO: leer los nombres de PostgreSQL (antes: leer nombres.txt)
     with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
         cur.execute("SELECT nombre FROM nombres ORDER BY id")
         names = [row[0] for row in cur.fetchall()]
