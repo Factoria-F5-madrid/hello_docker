@@ -5,6 +5,13 @@ import pandas as pd
 import psycopg2  # CAMBIO: driver para conectar con PostgreSQL (antes solo se usaba un archivo)
 
 
+# ANTES (con archivo): los nombres se guardaban en data/nombres.txt
+# DATA_DIR = "data"
+# DATA_FILE = os.path.join(DATA_DIR, "nombres.txt")
+#
+# # Crear la carpeta si no existe
+# os.makedirs(DATA_DIR, exist_ok=True)
+
 # CAMBIO: los nombres se guardan en PostgreSQL en vez de data/nombres.txt.
 # Los datos de conexión llegan como variables de entorno (las define docker-compose.yml)
 DB_CONFIG = {
@@ -281,7 +288,11 @@ with st.container(key="main-card"):
             st.success(random.choice(greetings))
             st.balloons()
 
-            # CAMBIO: guardar el nombre en PostgreSQL (antes: f.write en nombres.txt)
+            # ANTES (con archivo):
+            # with open(DATA_FILE, "a", encoding="utf-8") as f:
+            #     f.write(name + "\n")
+
+            # CAMBIO: guardar el nombre en PostgreSQL
             with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
                 cur.execute("INSERT INTO nombres (nombre) VALUES (%s)", (name,))
 
@@ -289,7 +300,19 @@ with st.container(key="main-card"):
             st.warning("⚠️ No olvides escribir tu nombre")
 
     # 📋 Mostrar nombres guardados en tabla
-    # CAMBIO: leer los nombres de PostgreSQL (antes: leer nombres.txt)
+    # ANTES (con archivo):
+    # if os.path.exists(DATA_FILE):
+    #     with open(DATA_FILE, "r", encoding="utf-8") as f:
+    #         names = f.read().splitlines()
+    #
+    #     if names:
+    #         ... (mostrar la tabla)
+    #     else:
+    #         st.info("Aún no hay nombres guardados.")
+    # else:
+    #     st.info("Aún no hay datos guardados.")
+
+    # CAMBIO: leer los nombres de PostgreSQL
     with psycopg2.connect(**DB_CONFIG) as conn, conn.cursor() as cur:
         cur.execute("SELECT nombre FROM nombres ORDER BY id")
         names = [row[0] for row in cur.fetchall()]
