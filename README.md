@@ -49,7 +49,7 @@ crear carpeta:
 mkdir practica-docker-compose
 cd practica-docker-compose
 ```
-Clona la rama y entra a la carpeta del proyecto:
+Clona la rama dentro de la carpeta que acabams de crear `practica-docker-compose` y entra a la carpeta del proyecto:
 
 ```bash
 git clone -b docker_compose https://github.com/Factoria-F5-madrid/hello_docker.git
