@@ -42,7 +42,14 @@ Dockerfile  ->  construye la imagen de la app  ->  Compose la arranca junto a la
 
 ---
 
-## Paso 0: Clonar esta rama
+## Paso 0: Crear la carpeta del proyecto y clonar esta rama
+
+crear carpeta:
+```bash
+mkdir practica-docker-compose
+cd practica-docker-compose
+```
+Clona la rama y entra a la carpeta del proyecto:
 
 ```bash
 git clone -b docker_compose https://github.com/Factoria-F5-madrid/hello_docker.git
